@@ -8,9 +8,6 @@ public class Admin {
     static Scanner sc = new Scanner(System.in);
     private static final String INVENTORY_FILE = "inventory.txt";
 
-    //Add filewriter
-
-
 
     public void displayAdmin(){
 
@@ -36,15 +33,18 @@ public class Admin {
             switch (choice){
                 case 'A':
                     try {
-                        System.out.print("Enter product: ");
+                        System.out.print("Enter Product: ");
                         String productName = sc.next();
                         System.out.print("Enter Quantity: ");
                         String productQuantity = sc.next();
+                        System.out.print("Enter Price: ");
+                        String productPrice = sc.next();
+
 
                         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(INVENTORY_FILE, true));
 
-                        bufferedWriter.write("Product: "+ productName + " || " + "Stock: " + productQuantity +  "\n");
-                        System.out.println("================================================================");
+                        bufferedWriter.write("Product: " + productName + " || " + " Price: " + productPrice + " || " + " Stock: " + productQuantity +  "\n");
+                        System.out.println("=============================================================");
                         bufferedWriter.close();
 
                     }catch(IOException e){
@@ -53,10 +53,11 @@ public class Admin {
                     break;
 
                 case 'B':
-                    System.out.print("Enter product: ");
+                    System.out.print("Enter Product: ");
                     String productName = sc.next();
                     System.out.print("Add Quantity: ");
                     int addQuantity = sc.nextInt();
+
 
                     // Read the contents of the notepad file into a list
                     List<String> lines = new ArrayList<>();
@@ -72,18 +73,21 @@ public class Admin {
                     //update the relevant stock information
                     for(int i = 0; i< lines.size(); i++) {
                         String line = lines.get(i);
-                        if (line.startsWith("Product: " +  productName)) {
+                        if (line.startsWith("Product: " + productName)) {
                             // Extract the stock name and current quantity from th  e line
-                            String[] parts = line.split(": ");
+                            String[] parts = line.split(":");
                             String stockName = parts[1].trim();
-                            int currentQuantity = Integer.parseInt(parts[2].trim());
+                            String productPrice = parts[2].trim();
+                            int currentQuantity = Integer.parseInt(parts[3].trim());
+
+
 
 
                             // Update the current quantity
                             int newQuantity = currentQuantity + addQuantity;
 
                             // Update the line with the new quantity
-                            lines.set(i, "Product: " + stockName + ": "+  newQuantity  );
+                            lines.set(i, "Product: " + stockName + ": " + productPrice + ": "+ newQuantity);
                             break; // Assuming there is only one occurrence of the stock information in the file
                         }
                     }
@@ -101,7 +105,8 @@ public class Admin {
 
                 case 'C':
                     try{
-                        System.out.println("===============  E-GroceMarket Inventory System ===============");
+                        System.out.println("============  E-GroceMarket Inventory System ============");
+                        System.out.println("==xProductx==  ==xStockx==  ==xPricex==" );
                         //Read All lines from the file
                         List<String> fileLine = Files.readAllLines(Paths.get(INVENTORY_FILE));
 
@@ -109,7 +114,8 @@ public class Admin {
                         for(String file : fileLine){
                             System.out.println(file);
                         }
-                        System.out.println("===============================================================");
+
+                        System.out.println("=========================================================");
                     }catch (IOException e){
                         e.printStackTrace();
                     }
