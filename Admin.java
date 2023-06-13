@@ -106,7 +106,7 @@ public class Admin {
                 case 'C':
                     try{
                         System.out.println("============  E-GroceMarket Inventory System ============");
-                        System.out.println("==xProductx==  ==xStockx==  ==xPricex==" );
+                        System.out.println("==xProductx==  ==xPricex==  ==xStockx==" );
                         //Read All lines from the file
                         List<String> fileLine = Files.readAllLines(Paths.get(INVENTORY_FILE));
 
