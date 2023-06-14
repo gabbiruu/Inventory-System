@@ -10,7 +10,6 @@ public class Admin {
 
 
     public void displayAdmin(){
-
         while(true){
             // Display choices
             System.out.println("\n||=====================================================||");
@@ -38,12 +37,11 @@ public class Admin {
                         System.out.print("Enter Quantity: ");
                         String productQuantity = sc.next();
                         System.out.print("Enter Price: ");
-                        String productPrice = sc.next();
-
+                        double productPrice = sc.nextDouble();
 
                         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(INVENTORY_FILE, true));
 
-                        bufferedWriter.write("Product: " + productName + " || " + " Price: " + productPrice + " || " + " Stock: " + productQuantity +  "\n");
+                        bufferedWriter.write( productName + " " + productQuantity + " " + productPrice +  "\n");
                         System.out.println("=============================================================");
                         bufferedWriter.close();
 
@@ -57,8 +55,6 @@ public class Admin {
                     String productName = sc.next();
                     System.out.print("Add Quantity: ");
                     int addQuantity = sc.nextInt();
-
-
                     // Read the contents of the notepad file into a list
                     List<String> lines = new ArrayList<>();
                     try(BufferedReader bufferedReader = new BufferedReader(new FileReader(INVENTORY_FILE))){
@@ -73,21 +69,19 @@ public class Admin {
                     //update the relevant stock information
                     for(int i = 0; i< lines.size(); i++) {
                         String line = lines.get(i);
-                        if (line.startsWith("Product: " + productName)) {
+                        if (line.startsWith(productName)) {
                             // Extract the stock name and current quantity from th  e line
-                            String[] parts = line.split(":");
-                            String stockName = parts[1].trim();
-                            String productPrice = parts[2].trim();
-                            int currentQuantity = Integer.parseInt(parts[3].trim());
-
-
+                            String[] parts = line.split(" ");
+                            String stockName = parts[0].trim();
+                            int currentQuantity = Integer.parseInt(parts[1].trim());
+                            double productPrice = Double.parseDouble(parts[2].trim());
 
 
                             // Update the current quantity
                             int newQuantity = currentQuantity + addQuantity;
 
                             // Update the line with the new quantity
-                            lines.set(i, "Product: " + stockName + ": " + productPrice + ": "+ newQuantity);
+                            lines.set(i,stockName + " " + newQuantity + " " + productPrice + "\n");
                             break; // Assuming there is only one occurrence of the stock information in the file
                         }
                     }
@@ -104,18 +98,25 @@ public class Admin {
                     break;
 
                 case 'C':
-                    try{
-                        System.out.println("============  E-GroceMarket Inventory System ============");
-                        System.out.println("==xProductx==  ==xPricex==  ==xStockx==" );
-                        //Read All lines from the file
-                        List<String> fileLine = Files.readAllLines(Paths.get(INVENTORY_FILE));
+                    try(BufferedReader br = new BufferedReader(new FileReader(INVENTORY_FILE))){
+                        System.out.println("||===========  E-GroceMarket Inventory System ===========||");
+                        System.out.println("||                                                       ||");
 
-                        //Display content of the file
-                        for(String file : fileLine){
-                            System.out.println(file);
+                        String line;
+                        while((line = br.readLine()) != null){ // check as long as the line is not null
+                            String[] seperator = line.split(" ");
+
+                            if(seperator.length == 3){ // check if the file has 3 values
+                                String stockName = seperator[0];
+                                int productQuantity = Integer.parseInt(seperator[1]);
+                                double productPrice = Double.parseDouble(seperator[2]);
+
+                                System.out.println("|| Product: " + stockName + " || " + " Stock: " + productQuantity + " | | "+  " Price: " + productPrice + "");
+                                System.out.println("||-----------------------------------------------------");
+                            }
                         }
+                        System.out.println("||_________________________________________________________||");
 
-                        System.out.println("=========================================================");
                     }catch (IOException e){
                         e.printStackTrace();
                     }
