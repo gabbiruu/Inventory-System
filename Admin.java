@@ -32,12 +32,44 @@ public class Admin {
             switch (choice){
                 case 'A':
                     try {
-                        System.out.print("Enter Product: ");
-                        String productName = sc.next();
-                        System.out.print("Enter Quantity: ");
-                        String productQuantity = sc.next();
-                        System.out.print("Enter Price: ");
-                        double productPrice = sc.nextDouble();
+                        String productName;
+                        String productQuantity;
+                        String productPrice;
+
+                        String lettersOnly = "^[A-Za-z]+$";
+                        String numbersOnly = "^[0-9]+$";
+
+                        //Validation
+                        do{
+                            System.out.print("Enter Product: ");
+                            productName = sc.next();
+                            if(productName.matches(lettersOnly)){
+                                break;
+                            }else{
+                                System.out.println("Only Accepts alphabetical characters");
+                            }
+                        }while(!productName.matches(lettersOnly));
+
+                        do{
+                            System.out.print("Enter Quantity: ");
+                            productQuantity = sc.next();
+                            if(productQuantity.matches(numbersOnly)){
+                                break;
+                            }else{
+                                System.out.println("Only Accepts numerical characters");
+                            }
+                        }while(!productQuantity.matches(numbersOnly));
+
+                        do{
+                            System.out.print("Enter Price: ");
+                            productPrice = sc.next();
+                            if(productPrice.matches(numbersOnly)){
+                                break;
+                            }else{
+                                System.out.println("Only Accepts numerical characters");
+                            }
+                        }while(!productPrice.matches(numbersOnly));
+                        //end validation
 
                         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(INVENTORY_FILE, true));
 
