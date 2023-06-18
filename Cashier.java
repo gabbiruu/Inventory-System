@@ -18,7 +18,8 @@ public class Cashier {
             System.out.println("||                                                     ||");
             System.out.println("||     A. Cart Item                                    ||");
             System.out.println("||     B. Checkout                                     ||");
-            System.out.println("||     C. Exit                                         ||");
+            System.out.println("||     C. Return                                       ||");
+            System.out.println("||     D. Exit                                         ||");
             System.out.println("||                                                     ||");
             System.out.println("||=====================================================||");
 
@@ -29,6 +30,30 @@ public class Cashier {
             switch (choice) {
                 case 'A':
                     while(true){
+                        try(BufferedReader br = new BufferedReader(new FileReader(INVENTORY_FILE))){
+                            System.out.println("||===========  E-GroceMarket Inventory System ===========||");
+                            System.out.println("||to proceed to checkout enter zero on both question     ||");
+
+                            String line;
+                            while((line = br.readLine()) != null){ // check as long as the line is not null
+                                String[] seperator = line.split(" ");
+
+                                if(seperator.length == 4){ // check if the file has 3 values
+                                    String productID = seperator[0];
+                                    String stockName = seperator[1];
+                                    int productQuantity = Integer.parseInt(seperator[2]);
+                                    double productPrice = Double.parseDouble(seperator[3]);
+
+                                    System.out.println("|| ID: " + productID + " || " + "Product: " + stockName + " || " + " Stock: " + productQuantity + " | | "+  " Price: " + productPrice + "");
+                                    System.out.println("||-----------------------------------------------------");
+                                }
+                            }
+                            System.out.println("||_________________________________________________________||");
+
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+
                         List<String> lines = new ArrayList<>();
                         String validation = "0?";
 
@@ -50,19 +75,20 @@ public class Cashier {
                         //update the relevant stock information
                         for (int i = 0; i < lines.size(); i++) {
                             String line = lines.get(i);
-                            if (line.startsWith(productChoice)) {
+                            if (line.startsWith(productChoice, 3)) {
                                 // Extract the stock name and current quantity from th  e line
                                 String[] parts = line.split(" ");
-                                String stockName = parts[0].trim();
-                                int currentQuantity = Integer.parseInt(parts[1].trim());
-                                double productPrice = Double.parseDouble(parts[2].trim());
+                                String productId = parts[0];
+                                String stockName = parts[1];
+                                int currentQuantity = Integer.parseInt(parts[2]);
+                                double productPrice = Double.parseDouble(parts[3]);
 
 
                                 // Update the current quantity
                                 int newQuantity = currentQuantity - quantityChoice;
 
                                 // Update the line with the new quantity
-                                lines.set(i,stockName + " " + newQuantity + " " + productPrice);
+                                lines.set(i,productId + " " +stockName + " " + newQuantity + " " + productPrice);
 
                                 //Total price
                                 double totalPrice = productPrice * quantityChoice;
@@ -120,12 +146,6 @@ public class Cashier {
                                 System.out.println("------------------");
                             }
                         }
-//                        //Read All lines from the file
-//                        List<String> fileLine = Files.readAllLines(Paths.get(INVENTORY_FILE));
-//
-//                        //Display content of the file
-//                        for (String file : fileLine) {
-//                            System.out.println(file);
                         System.out.println("Total: " + totalPrice);
                         System.out.println("===============================================================");
                     } catch (IOException e) {
