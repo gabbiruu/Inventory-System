@@ -1,12 +1,25 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
+import java.util.Random;
 public class Admin {
     static Scanner sc = new Scanner(System.in);
     private static final String INVENTORY_FILE = "inventory.txt";
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int ID_LENGTH = 3;
+
+    public static String generateProductID(){
+        StringBuilder sb = new StringBuilder(ID_LENGTH);
+        Random random = new Random();
+
+        for(int i = 0; i < ID_LENGTH; i++ ){
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            sb.append(randomChar).trimToSize();
+        }
+        return sb.toString();
+    }
 
 
     public void displayAdmin(){
@@ -27,7 +40,7 @@ public class Admin {
             System.out.print("Enter your choice: ");
             char choice = sc.next().toUpperCase().charAt(0);
             // End choices
-
+            String productId = generateProductID();
             //Switch Case
             switch (choice){
                 case 'A':
@@ -35,6 +48,7 @@ public class Admin {
                         String productName;
                         String productQuantity;
                         String productPrice;
+
 
                         String lettersOnly = "^[A-Za-z]+$";
                         String numbersOnly = "^[0-9]+$";
@@ -73,7 +87,7 @@ public class Admin {
 
                         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(INVENTORY_FILE, true));
 
-                        bufferedWriter.write( productName + " " + productQuantity + " " + productPrice +  "\n");
+                        bufferedWriter.write(productId + " " + productName + " " + productQuantity + " " + productPrice +  "\n");
                         System.out.println("=============================================================");
                         bufferedWriter.close();
 
@@ -101,19 +115,20 @@ public class Admin {
                     //update the relevant stock information
                     for(int i = 0; i< lines.size(); i++) {
                         String line = lines.get(i);
-                        if (line.startsWith(productName)) {
+                        if (line.startsWith(productName, 4)) {
                             // Extract the stock name and current quantity from th  e line
                             String[] parts = line.split(" ");
-                            String stockName = parts[0].trim();
-                            int currentQuantity = Integer.parseInt(parts[1].trim());
-                            double productPrice = Double.parseDouble(parts[2].trim());
+                            String productID = parts[0].trim();
+                            String stockName = parts[1].trim();
+                            int currentQuantity = Integer.parseInt(parts[2].trim());
+                            double productPrice = Double.parseDouble(parts[3].trim());
 
 
                             // Update the current quantity
                             int newQuantity = currentQuantity + addQuantity;
 
                             // Update the line with the new quantity
-                            lines.set(i,stockName + " " + newQuantity + " " + productPrice + "\n");
+                            lines.set(i,productID + " " + stockName + " " + newQuantity + " " + productPrice + "\n");
                             break; // Assuming there is only one occurrence of the stock information in the file
                         }
                     }
@@ -138,12 +153,13 @@ public class Admin {
                         while((line = br.readLine()) != null){ // check as long as the line is not null
                             String[] seperator = line.split(" ");
 
-                            if(seperator.length == 3){ // check if the file has 3 values
-                                String stockName = seperator[0];
-                                int productQuantity = Integer.parseInt(seperator[1]);
-                                double productPrice = Double.parseDouble(seperator[2]);
+                            if(seperator.length == 4){ // check if the file has 3 values
+                                String productID = seperator[0];
+                                String stockName = seperator[1];
+                                int productQuantity = Integer.parseInt(seperator[2]);
+                                double productPrice = Double.parseDouble(seperator[3]);
 
-                                System.out.println("|| Product: " + stockName + " || " + " Stock: " + productQuantity + " | | "+  " Price: " + productPrice + "");
+                                System.out.println("|| ID: " + productID + " || " + "Product: " + stockName + " || " + " Stock: " + productQuantity + " | | "+  " Price: " + productPrice + "");
                                 System.out.println("||-----------------------------------------------------");
                             }
                         }
@@ -167,4 +183,3 @@ public class Admin {
         }
     }
 }
-
