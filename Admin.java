@@ -28,10 +28,9 @@ public class Admin {
             System.out.println("||=====================================================||");
             System.out.println("||                                                     ||");
             System.out.println("||     A. Add Item                                     ||");
-            System.out.println("||     B. Add Quantity                                 ||");
+            System.out.println("||     B. Update Quantity                              ||");
             System.out.println("||     C. Display Inventory                            ||");
             System.out.println("||     D. Return                                       ||");
-            System.out.println("||     E. Exit                                         ||");
             System.out.println("||                                                     ||");
             System.out.println("||=====================================================||");
 
@@ -48,7 +47,7 @@ public class Admin {
                         String productQuantity;
                         double productPrice = 0;
 
-                        String lettersOnly = "^[A-Za-z]+$";
+                        String lettersOnly = "^[A-Za-z0]+$";
                         String numbersOnly = "^[0-9]+$";
 
                         //Validation
@@ -90,7 +89,8 @@ public class Admin {
                         System.out.println("=============================================================");
                         bufferedWriter.close();
 
-                    }catch(IOException e){
+                    }
+                    catch(IOException e){
                         System.out.println(e.getMessage());
                     }
                     break;
@@ -188,18 +188,15 @@ public class Admin {
                         }
                         System.out.println("||_________________________________________________________||");
 
-                    }catch (IOException e){
+                    }catch(FileNotFoundException e){
+                        System.out.println("Empty Inventory!");
+                    } catch (IOException e){
                         e.printStackTrace();
                     }
                     break;
                 case 'D':
                     Main.MainDisplay();
                     break;
-                case 'E':
-                    System.exit(0);
-                    System.out.println("Thank you for visiting!!");
-                    break;
-
             }
 
             //Switch Case
