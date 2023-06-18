@@ -28,6 +28,7 @@ public class Cashier {
 
             switch (choice) {
                 case 'A':
+                    System.out.println("Instructions: Case sensitive || If you want to exit enter both Zero (0) on both question ");
                     while(true){
                         List<String> lines = new ArrayList<>();
                         String validation = "0?";
@@ -99,6 +100,11 @@ public class Cashier {
                         }
                     }break;
                 case 'B':
+                    File file = new File(RECEIPT_FILE);
+                    if(file.exists() && file.length() == 0) {
+                        System.out.println("Cart is empty, go buy bili!");
+                        break;
+                    }
                     try (BufferedReader br = new BufferedReader(new FileReader(RECEIPT_FILE))){
                         System.out.println("===============  E-GroceMarket Checkout! ===============");
 
@@ -126,11 +132,7 @@ public class Cashier {
                         System.out.println("Confirm order (Y/N): ");
                         char input = sc.next().toUpperCase().charAt(0);
 
-                        File file = new File(RECEIPT_FILE);
-
-                        if(file.exists() && file.length() == 0){
-                            System.out.println("Empty Cart");
-                        } else if (input == 'Y'){
+                        if (input == 'Y'){
                             System.out.println("Enter amount to pay: ");
                             double money = sc.nextInt();
 
@@ -154,7 +156,7 @@ public class Cashier {
 
                         System.out.println("===============================================================");
                     }catch(FileNotFoundException e){
-                        System.out.println("Empty Cart!");
+                        System.out.println("Empty Cart");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
