@@ -133,18 +133,29 @@ public class Cashier {
                         char input = sc.next().toUpperCase().charAt(0);
 
                         if (input == 'Y'){
-                            System.out.println("Enter amount to pay: ");
-                            double money = sc.nextInt();
+                            double money = 0;
 
-                            double leftChange = money - totalPrice;
+                            while(true) {
+                                System.out.println("Enter amount to pay: ");
+                                money = sc.nextInt();
 
-                            System.out.println("Change: " + leftChange);
-                            System.out.println("Thank you for shopping");
+                                if (money < totalPrice) {
+                                    System.out.println("Insufficient payment! ");
+                                }else if (money >= totalPrice){
+                                    break;
+                                }
 
-                            //Empty all values inside the notepad
-                            BufferedWriter bw = new BufferedWriter(new FileWriter(RECEIPT_FILE));
-                            bw.write("");
-                            bw.close();
+                            }
+                                double leftChange = money - totalPrice;
+
+                                System.out.println("Change: " + leftChange);
+                                System.out.println("Thank you for shopping");
+
+                                //Empty all values inside the notepad
+                                BufferedWriter bw = new BufferedWriter(new FileWriter(RECEIPT_FILE));
+                                bw.write("");
+                                bw.close();
+
 
                         }else if(input == 'N'){
                             System.out.println("Enjoy Shopping");
