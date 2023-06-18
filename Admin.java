@@ -1,169 +1,205 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.List;
+import java.util.*;
 
-public class Cashier {
+public class Admin {
     static Scanner sc = new Scanner(System.in);
     private static final String INVENTORY_FILE = "inventory.txt";
-    private static final String RECEIPT_FILE = "checkout.txt";
+    private static final String CHARACTERS = "ZACF0123456";
+    private static final int ID_LENGTH = 3;
 
-    public void displayCashier(){
-        while(true) {
+    public static String generateProductID(){
+        StringBuilder sb = new StringBuilder(ID_LENGTH);
+        Random random = new Random();
+
+        for(int i = 0; i < ID_LENGTH; i++ ){
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            sb.append(randomChar).trimToSize();
+        }
+        return sb.toString();
+    }
+
+
+    public void displayAdmin(){
+        while(true){
+            // Display choices
             System.out.println("\n||=====================================================||");
             System.out.println("|| Welcome to E-GroceMarket! Please enter your choices ||");
             System.out.println("||=====================================================||");
             System.out.println("||                                                     ||");
-            System.out.println("||     A. Cart Item                                    ||");
-            System.out.println("||     B. Checkout                                     ||");
-            System.out.println("||     C. Return                                       ||");
+            System.out.println("||     A. Add Item                                     ||");
+            System.out.println("||     B. Update Quantity                              ||");
+            System.out.println("||     C. Display Inventory                            ||");
+            System.out.println("||     D. Return                                       ||");
             System.out.println("||                                                     ||");
             System.out.println("||=====================================================||");
 
             System.out.print("Enter your choice: ");
             char choice = sc.next().toUpperCase().charAt(0);
+            // End choices
+            String productId = generateProductID();
 
-
-            switch (choice) {
+            //Switch Case
+            switch (choice){
                 case 'A':
-                    while(true){
-                        List<String> lines = new ArrayList<>();
-                        String validation = "0?";
+                    try {
+                        String productName;
+                        String productQuantity;
+                        double productPrice = 0;
 
-                        System.out.print("Choose Product: ");
-                        String productChoice = sc.next();
-                        System.out.print("Enter Quantity: ");
-                        int quantityChoice = sc.nextInt();
+                        String lettersOnly = "^[A-Za-z0]+$";
+                        String numbersOnly = "^[0-9]+$";
 
-                        // Read the contents of the notepad file into a list
-                        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(INVENTORY_FILE))) {
-                            String line;
-                            while ((line = bufferedReader.readLine()) != null) {
-                                lines.add(line);
+                        //Validation
+                        do{
+                            System.out.print("Enter Product: ");
+                            productName = sc.next();
+                            if(productName.matches(lettersOnly)){
+                                break;
+                            }else{
+                                System.out.println("Only Accepts alphabetical characters");
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        }while(!productName.matches(lettersOnly));
 
-                        //update the relevant stock information
-                        for (int i = 0; i < lines.size(); i++) {
-                            String line = lines.get(i);
-                            if (line.startsWith(productChoice, 4)) {
-                                // Extract the stock name and current quantity from th  e line
-                                String[] parts = line.split(" ");
-                                String productId = parts[0];
-                                String stockName = parts[1];
-                                int currentQuantity = Integer.parseInt(parts[2]);
-                                double productPrice = Double.parseDouble(parts[3]);
+                        do{
+                            System.out.print("Enter Quantity: ");
+                            productQuantity = sc.next();
+                            if(productQuantity.matches(numbersOnly)){
+                                break;
+                            }else{
+                                System.out.println("Only Accepts numerical value");
+                            }
+                        }while(!productQuantity.matches(numbersOnly));
 
-
-                                // Update the current quantity
-                                int newQuantity = currentQuantity - quantityChoice;
-
-                                // Update the line with the new quantity
-                                lines.set(i,productId + " " +stockName + " " + newQuantity + " " + productPrice);
-
-                                //Total price
-                                double totalPrice = productPrice * quantityChoice;
-
-                                //Write receipt file on different notepad
-                                try(BufferedWriter bw = new BufferedWriter(new FileWriter(RECEIPT_FILE, true))){
-                                    bw.write(productChoice + " " + quantityChoice + " " + productPrice + " " + totalPrice + "\n");
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                }
-
+                        while(true){
+                            System.out.print("Enter Price: ");
+                            if(sc.hasNextInt()){
+                                productPrice = sc.nextDouble();
+                                break;
+                            }else{
+                                System.out.println("Only Accepts numerical values");
+                                sc.next();
                             }
                         }
+                        //end validation
 
-                        // Write the updated stock information back to the notepad file
-                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(INVENTORY_FILE))) {
-                            for (String line : lines) {
-                                writer.write(line);
-                                writer.newLine();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(INVENTORY_FILE, true));
 
-                        String convertInt = Integer.toString(quantityChoice);
-                        if(productChoice.matches(validation) && convertInt.matches(validation)){
-                            System.out.println("Checkout:");
-                            //List item and total price
+                        bufferedWriter.write(productId + " " + productName + " " + productQuantity + " " + productPrice +  "\n");
+                        System.out.println("=============================================================");
+                        bufferedWriter.close();
+
+                    }
+                    catch(IOException e){
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+
+                case 'B':
+                    String productName;
+                    int addQuantity = 0;
+                    String lettersOnly = "^[A-Za-z]+$";
+
+                    //Validation
+                    do{
+                        System.out.print("Enter Product: ");
+                        productName = sc.next();
+                        if(productName.matches(lettersOnly)){
                             break;
                         }else{
-                            System.out.println("");
-                            continue;
+                            System.out.println("Only Accepts alphabetical characters");
                         }
-                    }break;
-                case 'B':
-                    File file = new File(RECEIPT_FILE);
-                    if(file.exists() && file.length() == 0) {
-                        System.out.println("Cart is empty, go buy bili!");
-                        break;
-                    }
-                    try (BufferedReader br = new BufferedReader(new FileReader(RECEIPT_FILE))){
-                        System.out.println("===============  E-GroceMarket Checkout! ===============");
+                    }while(!productName.matches(lettersOnly));
 
-                        String line;
-                        double totalPrice = 0;
-                        while ((line = br.readLine()) != null) {
-                            String[] values = line.split(" ");
-
-                            if (values.length == 4) { // Assuming each line has three values: name, quantity, and price
-                                String name = values[0];
-                                int quantity = Integer.parseInt(values[1]);
-                                double price = Double.parseDouble(values[2]);
-                                double total = Double.parseDouble(values[3]);
-                                totalPrice += total;
-
-
-                                System.out.println("Name: " + name);
-                                System.out.println("Quantity: " + quantity);
-                                System.out.println("Price: " + price);
-                                System.out.println("Total: " + total);
-                                System.out.println("------------------");
-                            }
-                        }
-                        System.out.println("Total: " + totalPrice);
-                        System.out.println("Confirm order (Y/N): ");
-                        char input = sc.next().toUpperCase().charAt(0);
-
-                        if (input == 'Y'){
-                            System.out.println("Enter amount to pay: ");
-                            double money = sc.nextInt();
-
-                            double leftChange = money - totalPrice;
-
-                            System.out.println("Change: " + leftChange);
-                            System.out.println("Thank you for shopping");
-
-                            //Empty all values inside the notepad
-                            BufferedWriter bw = new BufferedWriter(new FileWriter(RECEIPT_FILE));
-                            bw.write("");
-                            bw.close();
-
-                        }else if(input == 'N'){
-                            System.out.println("Enjoy Shopping");
-                            continue;
-
+                    while(true){
+                        System.out.print("Add Quantity: ");
+                        if(sc.hasNextInt()){
+                            addQuantity = sc.nextInt();
+                            break;
                         }else{
-                            System.out.println("Invalid Input");
+                            System.out.println("Only Accepts numerical values");
+                            sc.next();
                         }
+                    }
+                    //End validation
 
-                        System.out.println("===============================================================");
-                    }catch(FileNotFoundException e){
-                        System.out.println("Empty Cart");
+
+                    // Read the contents of the notepad file into a list
+                    List<String> lines = new ArrayList<>();
+                    try(BufferedReader bufferedReader = new BufferedReader(new FileReader(INVENTORY_FILE))){
+                        String line;
+                        while((line = bufferedReader.readLine()) != null){
+                            lines.add(line);
+                        }
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                    //update the relevant stock information
+                    for(int i = 0; i< lines.size(); i++) {
+                        String line = lines.get(i);
+                        if (line.startsWith(productName, 4)) {
+                            // Extract the stock name and current quantity from th  e line
+                            String[] parts = line.split(" ");
+                            String productID = parts[0].trim();
+                            String stockName = parts[1].trim();
+                            int currentQuantity = Integer.parseInt(parts[2].trim());
+                            double productPrice = Double.parseDouble(parts[3].trim());
+
+
+                            // Update the current quantity
+                            int newQuantity = currentQuantity + addQuantity;
+
+                            // Update the line with the new quantity
+                            lines.set(i,productID + " " + stockName + " " + newQuantity + " " + productPrice + "\n");
+                            break; // Assuming there is only one occurrence of the stock information in the file
+                        }
+                    }
+
+                    // Write the updated stock information back to the notepad file
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(INVENTORY_FILE))) {
+                        for (String line : lines) {
+                            writer.write(line);
+                            writer.newLine();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     break;
+
                 case 'C':
+                    try(BufferedReader br = new BufferedReader(new FileReader(INVENTORY_FILE))){
+                        System.out.println("||===========  E-GroceMarket Inventory System ===========||");
+                        System.out.println("||                                                       ||");
+
+                        String line;
+                        while((line = br.readLine()) != null){ // check as long as the line is not null
+                            String[] seperator = line.split(" ");
+
+                            if(seperator.length == 4){ // check if the file has 3 values
+                                String productID = seperator[0];
+                                String stockName = seperator[1];
+                                int productQuantity = Integer.parseInt(seperator[2]);
+                                double productPrice = Double.parseDouble(seperator[3]);
+
+                                System.out.println("|| ID: " + productID + " || " + "Product: " + stockName + " || " + " Stock: " + productQuantity + " | | "+  " Price: " + productPrice + "");
+                                System.out.println("||-----------------------------------------------------");
+                            }
+                        }
+                        System.out.println("||_________________________________________________________||");
+
+                    }catch(FileNotFoundException e){
+                        System.out.println("Empty Inventory!");
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+                    break;
+                case 'D':
                     Main.MainDisplay();
                     break;
             }
+
+            //Switch Case
         }
     }
 }
