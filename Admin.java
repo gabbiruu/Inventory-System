@@ -1,12 +1,10 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
 public class Admin {
     static Scanner sc = new Scanner(System.in);
     private static final String INVENTORY_FILE = "inventory.txt";
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String CHARACTERS = "ZACF0123456";
     private static final int ID_LENGTH = 3;
 
     public static String generateProductID(){
@@ -41,14 +39,14 @@ public class Admin {
             char choice = sc.next().toUpperCase().charAt(0);
             // End choices
             String productId = generateProductID();
+
             //Switch Case
             switch (choice){
                 case 'A':
                     try {
                         String productName;
                         String productQuantity;
-                        String productPrice;
-
+                        double productPrice = 0;
 
                         String lettersOnly = "^[A-Za-z]+$";
                         String numbersOnly = "^[0-9]+$";
@@ -70,19 +68,20 @@ public class Admin {
                             if(productQuantity.matches(numbersOnly)){
                                 break;
                             }else{
-                                System.out.println("Only Accepts numerical characters");
+                                System.out.println("Only Accepts numerical value");
                             }
                         }while(!productQuantity.matches(numbersOnly));
 
-                        do{
+                        while(true){
                             System.out.print("Enter Price: ");
-                            productPrice = sc.next();
-                            if(productPrice.matches(numbersOnly)){
+                            if(sc.hasNextInt()){
+                                productPrice = sc.nextDouble();
                                 break;
                             }else{
-                                System.out.println("Only Accepts numerical characters");
+                                System.out.println("Only Accepts numerical values");
+                                sc.next();
                             }
-                        }while(!productPrice.matches(numbersOnly));
+                        }
                         //end validation
 
                         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(INVENTORY_FILE, true));
@@ -97,10 +96,34 @@ public class Admin {
                     break;
 
                 case 'B':
-                    System.out.print("Enter Product: ");
-                    String productName = sc.next();
-                    System.out.print("Add Quantity: ");
-                    int addQuantity = sc.nextInt();
+                    String productName;
+                    int addQuantity = 0;
+                    String lettersOnly = "^[A-Za-z]+$";
+
+                    //Validation
+                    do{
+                        System.out.print("Enter Product: ");
+                        productName = sc.next();
+                        if(productName.matches(lettersOnly)){
+                            break;
+                        }else{
+                            System.out.println("Only Accepts alphabetical characters");
+                        }
+                    }while(!productName.matches(lettersOnly));
+
+                    while(true){
+                        System.out.print("Add Quantity: ");
+                        if(sc.hasNextInt()){
+                            addQuantity = sc.nextInt();
+                            break;
+                        }else{
+                            System.out.println("Only Accepts numerical values");
+                            sc.next();
+                        }
+                    }
+                    //End validation
+
+
                     // Read the contents of the notepad file into a list
                     List<String> lines = new ArrayList<>();
                     try(BufferedReader bufferedReader = new BufferedReader(new FileReader(INVENTORY_FILE))){
